@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, AppState, Linking, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import Constants from 'expo-constants';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './src/lib/supabase';
 import { drawCosmetic, loadSnapshot, logWater, Snapshot, todayIntake } from './src/lib/data';
@@ -20,7 +21,7 @@ export default function App() {
   const [email,setEmail]=useState(''); const [password,setPassword]=useState('');
   const refresh=useCallback(async(userId:string)=>{
     try { const next=await loadSnapshot(userId); setSnapshot(next); setError('');
-      if(Platform.OS==='ios') { try { const widget=require('./src/widgets/MochiWidget').default; const midnight=new Date(); midnight.setUTCHours(24,0,0,0); widget.updateTimeline([{date:new Date(),props:{intake:todayIntake(next.logs),target:next.target}},{date:midnight,props:{intake:0,target:next.target}}]); } catch { /* Expo Go has no widget extension. */ } }
+      if(Platform.OS==='ios' && Constants.appOwnership !== 'expo') { try { const widget=require('./src/widgets/MochiWidget').default; const midnight=new Date(); midnight.setUTCHours(24,0,0,0); widget.updateTimeline([{date:new Date(),props:{intake:todayIntake(next.logs),target:next.target}},{date:midnight,props:{intake:0,target:next.target}}]); } catch { /* Expo Go has no widget extension. */ } }
     }
     catch(e) { setError(e instanceof Error?e.message:'Could not load Mochi'); }
   },[]);
