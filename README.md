@@ -4,7 +4,7 @@ An Expo React Native MVP based on the [six-screen Figma wireframes](https://www.
 
 ## Run
 
-Install Node 22+, then run `npm ci` and `npm start` in this folder. Open the Expo QR code in Expo Go on iOS or Android. For the iOS home-screen widget, make an iOS development build (`npx expo run:ios`) because the widget extension is unavailable in Expo Go. Create an account using email and a password of at least six characters. Supabase email confirmation may require confirming the message before signing in.
+Install Node 22+, then run `npm ci` and `npm start` in this folder. Open the Expo QR code in Expo Go on iOS or Android. For the iOS home-screen widget, make an iOS development build on a Mac with Xcode (`npx expo run:ios`) because the widget extension is unavailable in Expo Go. Create an account using email and a password of at least six characters. Supabase email confirmation may require confirming the message before signing in.
 
 The app uses the existing Mochi Hydration Supabase project. Its publishable client key is in `src/lib/supabase.ts`; no secret key is shipped. The applied schema is saved in `supabase/migrations/0001_initial.sql`. User owned records are protected with RLS; log and draw mutations run atomically on the server.
 
