@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, AppState, Linking, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './src/lib/supabase';
@@ -16,9 +16,12 @@ export default function App() {
   const [tab,setTab]=useState<Tab>('today');
   const [snapshot,setSnapshot]=useState<Snapshot|null>(null);
   const [error,setError]=useState('');
+  const lastWidgetTap=useRef(0);
   const [email,setEmail]=useState(''); const [password,setPassword]=useState('');
   const refresh=useCallback(async(userId:string)=>{
-    try { setSnapshot(await loadSnapshot(userId)); setError(''); }
+    try { const next=await loadSnapshot(userId); setSnapshot(next); setError('');
+      if(Platform.OS==='ios') { try { const widget=require('./src/widgets/MochiWidget').default; const midnight=new Date(); midnight.setUTCHours(24,0,0,0); widget.updateTimeline([{date:new Date(),props:{intake:todayIntake(next.logs),target:next.target}},{date:midnight,props:{intake:0,target:next.target}}]); } catch { /* Expo Go has no widget extension. */ } }
+    }
     catch(e) { setError(e instanceof Error?e.message:'Could not load Mochi'); }
   },[]);
   useEffect(()=>{
@@ -32,6 +35,18 @@ export default function App() {
     return ()=>{subscription.unsubscribe();app.remove();};
   },[]);
   useEffect(()=>{if(session?.user.id)void refresh(session.user.id);},[session?.user.id,refresh]);
+  useEffect(()=>{
+    if(!session)return;
+    const handle=(url:string)=>{
+      const match=/^mochi:\/\/log\?ml=(150|250|500)$/.exec(url);
+      if(!match || Date.now()-lastWidgetTap.current<1500)return;
+      lastWidgetTap.current=Date.now();
+      void (async()=>{try {await logWater(Number(match[1]));await refresh(session.user.id);}catch(e){setError(e instanceof Error?e.message:'Could not log from widget');}})();
+    };
+    const subscription=Linking.addEventListener('url',event=>handle(event.url));
+    void Linking.getInitialURL().then(url=>{if(url)handle(url);});
+    return ()=>subscription.remove();
+  },[session?.user.id,refresh]);
   async function authenticate(signUp:boolean){
     if(!email.trim()||password.length<6){setError('Enter an email and a password of at least 6 characters.');return;}
     setBusy(true);setError('');

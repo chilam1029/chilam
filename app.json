@@ -5,7 +5,32 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "ios": { "supportsTablet": false, "bundleIdentifier": "com.example.mochihydration" },
-    "android": { "package": "com.example.mochihydration" }
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.chilam.mochihydration"
+    },
+    "android": {
+      "package": "com.chilam.mochihydration"
+    },
+    "scheme": "mochi",
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "MochiQuickLog",
+              "displayName": "Mochi Hydration",
+              "description": "See Mochi and quickly log a drink",
+              "ios": {
+                "supportedFamilies": [
+                  "systemMedium"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    ]
   }
 }
