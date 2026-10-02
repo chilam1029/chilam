@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { MochiPlaceholder } from '../components/MochiPlaceholder';
+import { MochiCharacter } from '../components/MochiCharacter';
 import { stageFor } from '../lib/data';
 
 export function TodayScreen({ intake, target, drops, onLog, busy, monthKey }: { intake:number; target:number; drops:number; onLog:(ml:number)=>void; busy:boolean; monthKey?:string }) {
@@ -12,7 +12,7 @@ export function TodayScreen({ intake, target, drops, onLog, busy, monthKey }: { 
       <View style={styles.progressRow}><Text style={styles.percent}>{pct}%</Text><View><Text style={styles.body}>{intake.toLocaleString()} / {target.toLocaleString()} mL</Text><Text style={styles.muted}>Water Drop reward caps at 100%</Text></View></View>
       <View style={styles.track}><View style={[styles.fill,{width:`${progress*100}%`}]} /></View>
     </View>
-    <MochiPlaceholder label={new Date().getUTCHours()>=18 && pct<35?'A little water together, if you feel like it':'Mochi is enjoying your company'} />
+    <MochiCharacter label={new Date().getUTCHours()>=18 && pct<35?'A little water together, if you feel like it':'Mochi is enjoying your company'} />
     <View style={styles.card}><Text style={styles.heading}>Had some water?</Text><Text style={styles.muted}>Log it whenever you drink.</Text>
       <View style={styles.row}>{[150,250,500].map(ml=><Pressable accessibilityRole="button" disabled={busy} key={ml} style={[styles.button,busy&&styles.disabled]} onPress={()=>onLog(ml)}><Text>+{ml} mL</Text></Pressable>)}</View>
     </View>
