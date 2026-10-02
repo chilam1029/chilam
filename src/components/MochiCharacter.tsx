@@ -47,20 +47,26 @@ export function MochiCharacter({ label, reactionKey }: { label: string; reaction
   return (
     <View style={styles.card}>
       <Animated.View
-        style={{
-          transform: [
-            { translateY: reaction.interpolate({ inputRange: [0, 1, 2, 3], outputRange: [0, -16, 5, 0] }) },
-            { rotate: reaction.interpolate({ inputRange: [0, 1, 2, 3], outputRange: ['0deg', '-3deg', '2deg', '0deg'] }) }
-          ]
-        }}
+        style={[
+          styles.characterStage,
+          {
+            transform: [
+              { translateY: reaction.interpolate({ inputRange: [0, 1, 2, 3], outputRange: [0, -16, 5, 0] }) },
+              { rotate: reaction.interpolate({ inputRange: [0, 1, 2, 3], outputRange: ['0deg', '-3deg', '2deg', '0deg'] }) }
+            ]
+          }
+        ]}
       >
         <Animated.View
-          style={{
-            transform: [
-              { translateY: idle.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
-              { scale: idle.interpolate({ inputRange: [0, 1], outputRange: [1, 1.018] }) }
-            ]
-          }}
+          style={[
+            styles.characterStage,
+            {
+              transform: [
+                { translateY: idle.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
+                { scale: idle.interpolate({ inputRange: [0, 1], outputRange: [1, 1.018] }) }
+              ]
+            }
+          ]}
         >
           <Animated.Image
             accessibilityLabel="Mochi, an orange and white cat companion"
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 12
   },
+  characterStage: { alignItems: 'center', width: '100%' },
   mochi: { height: 260, width: '100%' },
   message: {
     backgroundColor: '#FFFEFA',
