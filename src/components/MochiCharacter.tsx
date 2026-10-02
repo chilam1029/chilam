@@ -1,14 +1,75 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 
-export function MochiCharacter({ label }: { label: string }) {
+export function MochiCharacter({ label, reactionKey }: { label: string; reactionKey: number }) {
+  const idle = useRef(new Animated.Value(0)).current;
+  const reaction = useRef(new Animated.Value(0)).current;
+  const hasMounted = useRef(false);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(idle, {
+          duration: 1500,
+          easing: Easing.inOut(Easing.sin),
+          isInteraction: false,
+          toValue: 1,
+          useNativeDriver: true
+        }),
+        Animated.timing(idle, {
+          duration: 1500,
+          easing: Easing.inOut(Easing.sin),
+          isInteraction: false,
+          toValue: 0,
+          useNativeDriver: true
+        })
+      ])
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [idle]);
+
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+
+    reaction.stopAnimation();
+    reaction.setValue(0);
+    Animated.sequence([
+      Animated.timing(reaction, { duration: 150, easing: Easing.out(Easing.quad), toValue: 1, useNativeDriver: true }),
+      Animated.timing(reaction, { duration: 120, easing: Easing.inOut(Easing.quad), toValue: 2, useNativeDriver: true }),
+      Animated.timing(reaction, { duration: 180, easing: Easing.out(Easing.quad), toValue: 3, useNativeDriver: true })
+    ]).start();
+  }, [reaction, reactionKey]);
+
   return (
     <View style={styles.card}>
-      <Image
-        accessibilityLabel="Mochi, an orange and white cat companion"
-        resizeMode="contain"
-        source={require('../../assets/mochi-character.png')}
-        style={styles.mochi}
-      />
+      <Animated.View
+        style={{
+          transform: [
+            { translateY: reaction.interpolate({ inputRange: [0, 1, 2, 3], outputRange: [0, -16, 5, 0] }) },
+            { rotate: reaction.interpolate({ inputRange: [0, 1, 2, 3], outputRange: ['0deg', '-3deg', '2deg', '0deg'] }) }
+          ]
+        }}
+      >
+        <Animated.View
+          style={{
+            transform: [
+              { translateY: idle.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
+              { scale: idle.interpolate({ inputRange: [0, 1], outputRange: [1, 1.018] }) }
+            ]
+          }}
+        >
+          <Animated.Image
+            accessibilityLabel="Mochi, an orange and white cat companion"
+            resizeMode="contain"
+            source={require('../../assets/mochi-character.png')}
+            style={styles.mochi}
+          />
+        </Animated.View>
+      </Animated.View>
       <View style={styles.message}>
         <Text style={styles.label}>{label}</Text>
       </View>
